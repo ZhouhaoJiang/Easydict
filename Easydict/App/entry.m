@@ -22,7 +22,7 @@ void queryText(NSString *text) {
     // ???: need to wait AppDelegate loaded.
     delay_block(^{
         EZWindowManager *windowManager = [EZWindowManager shared];
-        [windowManager showFloatingWindowType:EZWindowTypeFixed
+        [windowManager showFloatingWindowType:EZWindowTypeMain
                                     queryText:text.ns_trim
                                     autoQuery:YES
                                    actionType:EZActionTypeInvokeQuery];

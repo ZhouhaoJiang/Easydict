@@ -22,10 +22,11 @@
     [ShortcutManager.shared setupShortcut];
 
     [EZWindowManager.shared showMainWindowIfNeeded];
-    
+
     [self registerRouters];
-    
+
     [DarkModeManager.shared updateDarkMode:MyConfiguration.shared.appearance];
+    [EZDockIconManager.shared setup];
 }
 
 #pragma mark - NSApplicationDelegate

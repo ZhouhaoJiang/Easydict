@@ -8,7 +8,6 @@
 
 #import "EZWindowManager.h"
 #import "EZBaseQueryViewController.h"
-#import "EZFixedQueryWindow.h"
 #import "EZCoordinateUtils.h"
 
 @interface EZWindowManager ()
@@ -140,12 +139,7 @@ static EZWindowManager *_instance;
 
     [self.eventMonitor setDismissAllNotPinndFloatingWindowBlock:^{
         mm_strongify(self);
-        if (self->_miniWindow) {
-            [self closeFloatingWindowIfNotPinnedOrMain:EZWindowTypeMini];
-        }
-        if (self->_fixedWindow) {
-            [self closeFloatingWindowIfNotPinnedOrMain:EZWindowTypeFixed];
-        }
+        (void)self; // No floating windows to dismiss other than main window
     }];
 
     [self.eventMonitor setDoubleCommandBlock:^{
@@ -189,8 +183,8 @@ static EZWindowManager *_instance;
 - (void)popButtonWindowClicked {
     // Close pop button window first, and show floating window.
     [self.popButtonWindow close];
-    
-    EZWindowType windowType = MyConfiguration.shared.mouseSelectTranslateWindowType;
+
+    EZWindowType windowType = EZWindowTypeMain;
     self.actionType = EZActionTypeAutoSelectQuery;
     [self showFloatingWindowType:windowType queryText:self.selectedText];
 }
@@ -203,22 +197,6 @@ static EZWindowManager *_instance;
         _mainWindow.releasedWhenClosed = NO;
     }
     return _mainWindow;
-}
-
-- (EZFixedQueryWindow *)fixedWindow {
-    if (!_fixedWindow) {
-        _fixedWindow = [EZFixedQueryWindow shared];
-        _fixedWindow.releasedWhenClosed = NO;
-    }
-    return _fixedWindow;
-}
-
-- (EZMiniQueryWindow *)miniWindow {
-    if (!_miniWindow) {
-        _miniWindow = [[EZMiniQueryWindow alloc] init];
-        _miniWindow.releasedWhenClosed = NO;
-    }
-    return _miniWindow;
 }
 
 - (EZPopButtonWindow *)popButtonWindow {
@@ -263,28 +241,6 @@ static EZWindowManager *_instance;
 }
 
 #pragma mark - Show Floating Window
-
-/// Show floating window with OCR image, auto query or not.
-- (void)showFloatingWindowWithOCRImage:(NSImage *)image
-                             autoQuery:(BOOL)autoQuery
-                            actionType:(EZActionType)actionType {
-    if (!image) {
-        MMLogWarn(@"Image is nil, cannot show OCR window");
-        return;
-    }
-
-    MMLogInfo(@"Show window with OCR image");
-
-    EZWindowType windowType = MyConfiguration.shared.shortcutSelectTranslateWindowType;
-    EZBaseQueryWindow *window = [self windowWithType:windowType];
-
-    // Reset window height first, avoid being affected by previous window height.
-    [window.queryViewController resetTableView:^{
-        self.actionType = actionType;
-        [self showFloatingWindowType:windowType queryText:nil];
-        [window.queryViewController startOCRImage:image actionType:actionType autoQuery:autoQuery];
-    }];
-}
 
 /// Show floating window.
 - (void)showFloatingWindowType:(EZWindowType)windowType queryText:(nullable NSString *)queryText {
@@ -429,17 +385,10 @@ static EZWindowManager *_instance;
             window = _mainWindow;
             break;
         }
-        case EZWindowTypeFixed: {
-            window = self.fixedWindow;
+        case EZWindowTypeFixed:
+        case EZWindowTypeMini:
+        case EZWindowTypeNone:
             break;
-        }
-        case EZWindowTypeMini: {
-            window = self.miniWindow;
-            break;
-        }
-        case EZWindowTypeNone: {
-            break;
-        }
     }
     return window;
 }
@@ -452,17 +401,10 @@ static EZWindowManager *_instance;
             location = CGPointMake(100, 500);
             break;
         }
-        case EZWindowTypeFixed: {
-            location = [self getFloatingWindowLocation:MyConfiguration.shared.fixedWindowPosition];
+        case EZWindowTypeFixed:
+        case EZWindowTypeMini:
+        case EZWindowTypeNone:
             break;
-        }
-        case EZWindowTypeMini: {
-            location = [self getFloatingWindowLocation:MyConfiguration.shared.miniWindowPosition];
-            break;
-        }
-        case EZWindowTypeNone: {
-            break;
-        }
     }
     return location;
 }
@@ -487,12 +429,8 @@ static EZWindowManager *_instance;
 
     // Close pop button window when showing floating window.
     [EZPopButtonWindow.shared close];
-    
-    [self saveFrontmostApplication];
 
-    if (Screenshot.shared.isTakingScreenshot) {
-        return;
-    }
+    [self saveFrontmostApplication];
 
     [[self currentShowingSettingsWindow] close];
 
@@ -512,7 +450,7 @@ static EZWindowManager *_instance;
 
     //    MMLogInfo(@"window frame: %@", @(window.frame));
 
-    // ???: This code will cause warning: [Window] Warning: Window EZFixedQueryWindow 0x107f04db0 ordered front from a non-active application and may order beneath the active application's windows.
+    // ???: This code will cause warning: [Window] Warning: Window ordered front from a non-active application and may order beneath the active application's windows.
     [window makeKeyAndOrderFront:nil];
 
     /// ???: orderFrontRegardless will cause OCR show blank window when window has shown.
@@ -548,8 +486,6 @@ static EZWindowManager *_instance;
 
 - (void)updateWindowsTitlebarButtonsToolTip {
     [_mainWindow.titleBar updateShortcutButtonsToolTip];
-    [_miniWindow.titleBar updateShortcutButtonsToolTip];
-    [_fixedWindow.titleBar updateShortcutButtonsToolTip];
 }
 
 /// TODO: need to optimize.
@@ -610,18 +546,6 @@ static EZWindowManager *_instance;
     return popLocation;
 }
 
-- (CGPoint)getMiniWindowLocation {
-    CGPoint position = [self getShowingMouseLocation];
-
-    // If action none, just show mini window, then show window at last position.
-    if (self.actionType == EZActionTypeNone) {
-        CGRect formerFrame = [EZLayoutManager.shared windowFrameWithType:EZWindowTypeMini];
-        position = [EZCoordinateUtils getFrameTopLeftPoint:formerFrame];
-    }
-
-    return position;
-}
-
 - (CGPoint)getShowingMouseLocation {
     BOOL offsetFlag = self.popButtonWindow.isVisible;
     return [self getMouseLocation:offsetFlag];
@@ -672,13 +596,8 @@ static EZWindowManager *_instance;
         }
         case EZShowWindowPositionFormer: {
             // !!!: origin postion is bottom-left point, we need to convert it to top-left point.
-            CGRect formerFrame = [EZLayoutManager.shared windowFrameWithType:EZWindowTypeFixed];
+            CGRect formerFrame = [EZLayoutManager.shared windowFrameWithType:EZWindowTypeMain];
             position = [EZCoordinateUtils getFrameTopLeftPoint:formerFrame];
-
-            if (windowPosition == EZShowWindowPositionFormer) {
-                // If window position is former, we need to get the screen frame when window is shown.
-                screenVisibleFrame = MyConfiguration.shared.formerFixedScreenVisibleFrame;
-            }
             break;
         }
         case EZShowWindowPositionCenter: {
@@ -794,11 +713,8 @@ static EZWindowManager *_instance;
     }
 
     [self saveFrontmostApplication];
-    if (Screenshot.shared.isTakingScreenshot) {
-        return;
-    }
 
-    EZWindowType windowType = MyConfiguration.shared.shortcutSelectTranslateWindowType;
+    EZWindowType windowType = EZWindowTypeMain;
     MMLogInfo(@"selectTextTranslate windowType: %@", @(windowType));
     self.eventMonitor.actionType = EZActionTypeShortcutQuery;
     [self.eventMonitor getSelectedTextWithCompletion:^(NSString *_Nullable text) {
@@ -816,11 +732,8 @@ static EZWindowManager *_instance;
     MMLogInfo(@"inputTranslate");
 
     [self saveFrontmostApplication];
-    if (Screenshot.shared.isTakingScreenshot) {
-        return;
-    }
 
-    EZWindowType windowType = MyConfiguration.shared.shortcutSelectTranslateWindowType;
+    EZWindowType windowType = EZWindowTypeMain;
 
     if (self.floatingWindowType == windowType && self.floatingWindow.isVisible) {
         [self closeFloatingWindow];
@@ -836,139 +749,9 @@ static EZWindowManager *_instance;
     [self showFloatingWindowType:windowType queryText:queryText];
 }
 
-/// Show mini window at last positon.
-- (void)showMiniFloatingWindow {
-    MMLogInfo(@"showMiniFloatingWindow");
-
-    EZWindowType windowType = MyConfiguration.shared.mouseSelectTranslateWindowType;
-
-    if (self.floatingWindowType == windowType && self.floatingWindow.isVisible) {
-        [self closeFloatingWindow];
-        return;
-    }
-
-    self.actionType = EZActionTypeNone;
-    [self showFloatingWindowType:windowType queryText:nil];
-}
-
-- (void)snipTranslate {
-    MMLogInfo(@"snipTranslate");
-
-    // Close non-main floating window if not pinned. Fix https://github.com/tisfeng/Easydict/issues/126
-    [self closeFloatingWindowIfNotPinnedOrMain];
-
-    [self captureWithRestorePreviousApp:NO completion:^(NSImage *_Nullable image) {
-        BOOL autoQuery = [MyConfiguration.shared autoQueryOCRText];
-        [self showFloatingWindowWithOCRImage:image autoQuery:autoQuery actionType:EZActionTypeOCRQuery];
-    }];
-}
-
-/// Silent screenshot and OCR, without showing floating window.
-- (void)silentScreenshotOCR {
-    MMLogInfo(@"Silent screenshot and OCR");
-
-    [self captureWithRestorePreviousApp:YES completion:^(NSImage *_Nullable image) {
-        if (!image) {
-            return;
-        }
-
-        self.actionType = EZActionTypeScreenshotOCR;
-        EZBaseQueryViewController *viewController = self.backgroundQueryViewController;
-        [viewController resetQueryModelForBackgroundOCR];
-        [viewController startOCRImage:image actionType:self.actionType autoQuery:NO];
-    }];
-}
-
-- (void)screenshotOCR {
-    MMLogInfo(@"Screenshot OCR");
-
-    [self captureWithRestorePreviousApp:YES completion:^(NSImage *_Nullable image) {
-        AppleOCREngine *appleOCREngine = [AppleOCREngine new];
-        [appleOCREngine showOCRWindowWithImage:image language:EZLanguageAuto completionHandler:^(NSError *error) {
-            if (error) {
-                MMLogError(@"OCR Preview failed: %@", error.localizedDescription);
-            }
-        }];
-    }];
-}
-
-/// Translate text from pasteboard, support both image and text.
-- (void)pasteboardTranslate:(EZWindowType)windowType {
-    MMLogInfo(@"Pasteboard Translate with windowType: %@", @(windowType));
-
-    self.actionType = EZActionTypePasteboardTranslate;
-    BOOL autoQuery = [MyConfiguration.shared autoQueryPastedText];
-
-    // Try to read image from pasteboard first.
-    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-    NSImage *image = pasteboard.image;
-    if (image) {
-        [self showFloatingWindowWithOCRImage:image autoQuery:autoQuery actionType:self.actionType];
-        return;
-    }
-
-    // If no image, read string from pasteboard.
-    NSString *queryText = pasteboard.string;
-    if (queryText.length > 0) {
-        [self showFloatingWindowType:windowType queryText:queryText autoQuery:autoQuery actionType:self.actionType];
-    }
-}
-
-/**
- * Capture screenshot with options for app restoration
- * @param restorePreviousApp Whether to restore the previous application after capture
- * @param imageHandler Block to handle the captured image
- */
-- (void)captureWithRestorePreviousApp:(BOOL)restorePreviousApp
-                           completion:(void (^)(NSImage *_Nullable image))imageHandler {
-    MMLogInfo(@"Starting capture");
-
-    [self saveFrontmostApplication];
-
-    if (Screenshot.shared.isTakingScreenshot) {
-        MMLogWarn(@"Already snapshotting, ignoring request");
-        return;
-    }
-
-    // Set whether to restore previous app
-    Screenshot.shared.shouldRestorePreviousApp = restorePreviousApp;
-
-    void (^captureCompletion)(NSImage *_Nullable) = ^(NSImage *_Nullable image) {
-        if (!image) {
-            MMLogWarn(@"Failed to capture screenshot");
-            if (imageHandler) {
-                imageHandler(nil);
-            }
-            return;
-        }
-
-        MMLogInfo(@"Screenshot captured: %@", image);
-
-        static NSString *_imagePath = nil;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            _imagePath = [[MMManagerForLog logDirectoryWithName:@"Image"] stringByAppendingPathComponent:@"snip_image.png"];
-        });
-
-        [[NSFileManager defaultManager] removeItemAtPath:_imagePath error:nil];
-        [image mm_writeToFileAsPNG:_imagePath];
-        MMLogInfo(@"Saved image: %@", _imagePath);
-
-        if (imageHandler) {
-            imageHandler(image);
-        }
-    };
-
-    [Screenshot.shared startCaptureWithCompletion:captureCompletion];
-}
-
 #pragma mark - Application Shortcut
 
 - (void)rerty {
-    if (Screenshot.shared.isTakingScreenshot) {
-        return;
-    }
-
     if ([[NSApplication sharedApplication] keyWindow] == self.floatingWindow) {
         [self.floatingWindow.queryViewController retryQueryWithLanguage:EZLanguageAuto];
     }
@@ -1002,13 +785,9 @@ static EZWindowManager *_instance;
 }
 
 - (void)closeWindowOrExitSreenshot {
-    MMLogInfo(@"Close window, or exit screenshot");
+    MMLogInfo(@"Close window");
 
-    if (Screenshot.shared.isTakingScreenshot) {
-        [Screenshot.shared finishCapture:nil];
-    } else {
-        [self closeFloatingWindow];
-    }
+    [self closeFloatingWindow];
 }
 
 - (void)toggleTranslationLanguages {

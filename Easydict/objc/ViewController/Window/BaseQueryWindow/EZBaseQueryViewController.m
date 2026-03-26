@@ -586,10 +586,6 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
                 return;
             }
 
-            if (self.config.autoCopyOCRText) {
-                [inputText copyToPasteboard];
-            }
-
             [self.queryView highlightAllLinks];
 
             if ([self.inputText ns_isURL]) {
@@ -814,7 +810,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     NSImage *ocrImage = self.queryModel.ocrImage;
 
     if (ocrImage && (actionType == EZActionTypeOCRQuery || actionType == EZActionTypePasteboardOCR)) {
-        BOOL autoQuery = self.config.autoCopyOCRText || self.config.autoQueryPastedText || self.queryModel.autoQuery;
+        BOOL autoQuery = self.config.autoQueryPastedText || self.queryModel.autoQuery;
         [self startOCRImage:ocrImage actionType:actionType autoQuery:autoQuery];
     } else {
         [self startQueryText:self.inputText actionType:actionType];

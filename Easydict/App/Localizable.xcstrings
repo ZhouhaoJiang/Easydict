@@ -2249,6 +2249,34 @@
         }
       }
     },
+    "setting.general.app_setting.show_dock_icon" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Dock Icon"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobraziť ikonu v doku"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Dock 中显示图标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Dock 顯示圖示"
+          }
+        }
+      }
+    },
     "hide_menu_bar_icon" : {
       "localizations" : {
         "en" : {

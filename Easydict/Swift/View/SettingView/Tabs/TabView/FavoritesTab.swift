@@ -266,11 +266,9 @@ struct QueryRecordRow: View {
 
     /// Replays the query stored in this record.
     private func performQuery() {
-        let windowType = Defaults[.shortcutSelectTranslateWindowType]
-
         // Trigger a new query with the stored text and languages
         let windowManager = EZWindowManager.shared()
-        windowManager.showFloating(windowType, queryText: record.queryText, autoQuery: true, actionType: .inputQuery)
+        windowManager.showFloating(.main, queryText: record.queryText, autoQuery: true, actionType: .inputQuery)
     }
 }
 

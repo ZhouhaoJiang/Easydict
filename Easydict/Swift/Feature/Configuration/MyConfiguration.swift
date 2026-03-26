@@ -60,12 +60,6 @@ class MyConfiguration: NSObject {
     @DefaultsWrapper(.enableForceGetSelectedText) var enableForceGetSelectedText: Bool
     @DefaultsWrapper(.clickQuery) var clickQuery: Bool
 
-    @DefaultsWrapper(.mouseSelectTranslateWindowType) var mouseSelectTranslateWindowType:
-        EZWindowType
-    @DefaultsWrapper(.shortcutSelectTranslateWindowType) var shortcutSelectTranslateWindowType:
-        EZWindowType
-    @DefaultsWrapper(.fixedWindowPosition) var fixedWindowPosition: EZShowWindowPosition
-    @DefaultsWrapper(.miniWindowPosition) var miniWindowPosition: EZShowWindowPosition
     @DefaultsWrapper(.pinWindowWhenDisplayed) var pinWindowWhenDisplayed
     @DefaultsWrapper(.hideMainWindow) var hideMainWindow: Bool
 
@@ -78,14 +72,12 @@ class MyConfiguration: NSObject {
     @DefaultsWrapper(.replaceNewlineWithSpace) var replaceNewlineWithSpace: Bool
     @DefaultsWrapper(.enableRemoveBooksExcerptInfo) var enableRemoveBooksExcerptInfo: Bool
 
-    @DefaultsWrapper(.autoQueryOCRText) var autoQueryOCRText: Bool
     @DefaultsWrapper(.autoQuerySelectedText) var autoQuerySelectedText: Bool
     @DefaultsWrapper(.autoQueryPastedText) var autoQueryPastedText: Bool
     @DefaultsWrapper(.autoPlayAudio) var autoPlayAudio: Bool
     @DefaultsWrapper(.pronunciation) var pronunciation: EnglishPronunciation
 
     @DefaultsWrapper(.autoCopySelectedText) var autoCopySelectedText: Bool
-    @DefaultsWrapper(.autoCopyOCRText) var autoCopyOCRText: Bool
     @DefaultsWrapper(.autoCopyFirstTranslatedText) var autoCopyFirstTranslatedText: Bool
 
     @DefaultsWrapper(.showGoogleQuickLink) var showGoogleQuickLink: Bool
@@ -100,16 +92,11 @@ class MyConfiguration: NSObject {
     // Advanced Tab
     @DefaultsWrapper(.disableTipsView) var disableTipsView: Bool
     @DefaultsWrapper(.enableBetaFeature) private(set) var beta: Bool
-    @DefaultsWrapper(.enableYoudaoOCR) var enableYoudaoOCR: Bool
     @DefaultsWrapper(.enableCompatibilityReplace) var enableCompatibilityReplace: Bool
     @DefaultsWrapper(.forceGetSelectedTextType) var forceGetSelectedTextType:
         ForceGetSelectedTextType
 
     @DefaultsWrapper(.enableAppleOfflineTranslation) var enableAppleOfflineTranslation: Bool
-    @DefaultsWrapper(.enableOCRTextNormalization) var enableOCRTextNormalization: Bool
-    @DefaultsWrapper(.isScreenshotTipLayerHidden) var isScreenshotTipLayerHidden: Bool
-    @DefaultsWrapper(.formerFixedScreenVisibleFrame) var formerFixedScreenVisibleFrame: CGRect
-    @DefaultsWrapper(.formerMiniScreenVisibleFrame) var formerMiniScreenVisibleFrame: CGRect
 
     @DefaultsWrapper(.preferAppleScriptAPI) var preferAppleScriptAPI: Bool
 
@@ -223,13 +210,6 @@ class MyConfiguration: NSObject {
             }
             .store(in: &cancellables)
 
-        Defaults.publisher(.autoQueryOCRText, options: [])
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.didSetAutoQueryOCRText()
-            }
-            .store(in: &cancellables)
-
         Defaults.publisher(.autoQuerySelectedText, options: [])
             .removeDuplicates()
             .sink { [weak self] _ in
@@ -262,13 +242,6 @@ class MyConfiguration: NSObject {
             .removeDuplicates()
             .sink { [weak self] _ in
                 self?.didSetAutoCopySelectedText()
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(.autoCopyOCRText, options: [])
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.didSetAutoCopyOCRText()
             }
             .store(in: &cancellables)
 
@@ -328,27 +301,6 @@ class MyConfiguration: NSObject {
             }
             .store(in: &cancellables)
 
-        Defaults.publisher(.fixedWindowPosition, options: [])
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.didSetFixedWindowPosition()
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(.mouseSelectTranslateWindowType, options: [])
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.didSetMouseSelectTranslateWindowType()
-            }
-            .store(in: &cancellables)
-
-        Defaults.publisher(.shortcutSelectTranslateWindowType, options: [])
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.didSetShortcutSelectTranslateWindowType()
-            }
-            .store(in: &cancellables)
-
         Defaults.publisher(.allowCrashLog, options: [.initial])
             .removeDuplicates()
             .sink { [weak self] _ in
@@ -400,15 +352,6 @@ class MyConfiguration: NSObject {
         }
         .store(in: &cancellables)
 
-        Defaults.publisher(.enableHTTPServer)
-            .removeDuplicates()
-            .sink { change in
-                let isOn = change.newValue
-                Task {
-                    await VaporServer.shared.startServer(isOn: isOn)
-                }
-            }
-            .store(in: &cancellables)
     }
 }
 
@@ -460,10 +403,6 @@ extension MyConfiguration {
         logSettings(["hide_main_window": hideMainWindow])
     }
 
-    fileprivate func didSetAutoQueryOCRText() {
-        logSettings(["auto_query_ocr_text": autoQueryOCRText])
-    }
-
     fileprivate func didSetAutoQuerySelectedText() {
         logSettings(["auto_query_selected_text": autoQuerySelectedText])
     }
@@ -482,10 +421,6 @@ extension MyConfiguration {
 
     fileprivate func didSetAutoCopySelectedText() {
         logSettings(["auto_copy_selected_text": autoCopySelectedText])
-    }
-
-    fileprivate func didSetAutoCopyOCRText() {
-        logSettings(["auto_copy_ocr_text": autoCopyOCRText])
     }
 
     fileprivate func didSetAutoCopyFirstTranslatedText() {
@@ -524,18 +459,6 @@ extension MyConfiguration {
 
     fileprivate func didSetHideMenuBarIcon() {
         logSettings(["hide_menu_bar_icon": hideMenuBarIcon])
-    }
-
-    fileprivate func didSetFixedWindowPosition() {
-        logSettings(["show_fixed_window_position": fixedWindowPosition])
-    }
-
-    fileprivate func didSetMouseSelectTranslateWindowType() {
-        logSettings(["show_mouse_window_type": mouseSelectTranslateWindowType])
-    }
-
-    fileprivate func didSetShortcutSelectTranslateWindowType() {
-        logSettings(["show_shortcut_window_type": shortcutSelectTranslateWindowType])
     }
 
     fileprivate func didSetAllowCrashLog() {

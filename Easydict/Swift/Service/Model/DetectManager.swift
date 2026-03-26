@@ -302,30 +302,7 @@ public final class DetectManager: NSObject {
             return
         }
 
-        /**
-         Sometimes Apple OCR may fail, such as with Japanese text.
-         If we have set Japanese as the preferred language and OCR again when the
-         OCR result is empty, it seems to work currently, but we don't guarantee
-         it will always work in other languages.
-         */
-
-        guard MyConfiguration.shared.enableYoudaoOCR else {
-            completion(ocrResult, error)
-            return
-        }
-
-        Task {
-            do {
-                let result = try await youdaoService.ocr(queryModel)
-                await MainActor.run {
-                    completion(result, nil)
-                }
-            } catch {
-                await MainActor.run {
-                    completion(ocrResult, error)
-                }
-            }
-        }
+        completion(ocrResult, error)
     }
 
     /// Detects language using Baidu's service as a fallback.

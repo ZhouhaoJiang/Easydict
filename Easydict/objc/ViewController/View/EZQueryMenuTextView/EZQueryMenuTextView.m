@@ -52,11 +52,7 @@
     EZWindowManager *windowManager = [EZWindowManager shared];
     EZWindowType floatingWindowType = windowManager.floatingWindowType;
 
-    if (MyConfiguration.shared.mouseSelectTranslateWindowType == floatingWindowType) {
-        anotherWindowType = MyConfiguration.shared.shortcutSelectTranslateWindowType;
-    } else {
-        anotherWindowType = MyConfiguration.shared.mouseSelectTranslateWindowType;
-    }
+    anotherWindowType = EZWindowTypeMain;
 
     if (anotherWindowType != floatingWindowType) {
         // Note that floating window will be closed if not pinned when losing focus.

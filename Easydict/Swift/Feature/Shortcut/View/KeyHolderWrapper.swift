@@ -128,16 +128,7 @@ extension KeyHolderWrapper {
         private var shortcutTypeToDefaultsKey: [ShortcutAction: DefaultsKeyWrapper] {
             [
                 .inputTranslate: DefaultsKeyWrapper(.inputShortcut),
-                .snipTranslate: DefaultsKeyWrapper(.snipShortcut),
                 .selectTranslate: DefaultsKeyWrapper(.selectionShortcut),
-                .silentScreenshotOCR: DefaultsKeyWrapper(.silentScreenshotOCRShortcut),
-                .showMiniWindow: DefaultsKeyWrapper(.showMiniWindowShortcut),
-                .pasteboardTranslate: DefaultsKeyWrapper(.pasteboardTranslateShortcut),
-                .translateAndReplace: DefaultsKeyWrapper(.translateAndReplaceShortcut),
-                .polishAndReplace: DefaultsKeyWrapper(.polishAndReplaceShortcut),
-                .screenshotOCR: DefaultsKeyWrapper(.screenshotOCRShortcut),
-                .pasteboardOCR: DefaultsKeyWrapper(.pasteboardOCRShortcut),
-                .showOCRWindow: DefaultsKeyWrapper(.showOCRWindowShortcut),
                 .clearInput: DefaultsKeyWrapper(.clearInputShortcut),
                 .clearAll: DefaultsKeyWrapper(.clearAllShortcut),
                 .copy: DefaultsKeyWrapper(.copyShortcut),

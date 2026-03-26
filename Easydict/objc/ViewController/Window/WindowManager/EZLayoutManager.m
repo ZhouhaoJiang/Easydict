@@ -220,28 +220,11 @@ static EZLayoutManager *_instance;
         case EZWindowTypeMain:
             self.mainWindowFrame = windowFrame;
             break;
-        case EZWindowTypeFixed: {
+        case EZWindowTypeFixed:
             self.fixedWindowFrame = windowFrame;
-
-            // Record screenVisibleFrame when fixedWindowPosition is EZShowWindowPositionFormer
-            if (MyConfiguration.shared.fixedWindowPosition == EZShowWindowPositionFormer) {
-                CGPoint fixedWindowCenter = NSMakePoint(NSMidX(windowFrame), NSMidY(windowFrame));
-
-                // Update lastPoint to update current active screen
-                EZWindowManager.shared.lastPoint = fixedWindowCenter;
-                MyConfiguration.shared.formerFixedScreenVisibleFrame = self.screen.visibleFrame;
-            }
             break;
-        }
         case EZWindowTypeMini:
             self.miniWindowFrame = window.frame;
-
-            if (MyConfiguration.shared.miniWindowPosition == EZShowWindowPositionFormer) {
-                CGPoint fixedWindowCenter = NSMakePoint(NSMidX(windowFrame), NSMidY(windowFrame));
-
-                EZWindowManager.shared.lastPoint = fixedWindowCenter;
-                MyConfiguration.shared.formerMiniScreenVisibleFrame = self.screen.visibleFrame;
-            }
             break;
         default:
             break;

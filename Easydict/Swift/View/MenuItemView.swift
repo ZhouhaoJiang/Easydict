@@ -19,31 +19,13 @@ struct MenuItemView: View {
     // MARK: Internal
 
     var body: some View {
-        // .menuBarExtraStyle为 .menu 时某些控件可能会失效，只能显示内容（按照菜单项高度、图像以 template 方式渲染）无法交互
-        // 比如 Stepper、Slider 等，像基本的 Button、Text、Divider、Image 等还是能正常显示的。
-        // Button 和Label的systemImage是不会渲染的
         Group {
             versionItem
 
             Divider()
 
             inputItem.keyboardShortcut(.inputTranslate)
-            screenshotItem.keyboardShortcut(.snipTranslate)
             selectWordItem.keyboardShortcut(.selectTranslate)
-            pasteboardTranslateItem.keyboardShortcut(.pasteboardTranslate)
-            polishAndReplaceItem.keyboardShortcut(.polishAndReplace)
-            translateAndReplaceItem.keyboardShortcut(.translateAndReplace)
-            miniWindowItem.keyboardShortcut(.showMiniWindow)
-
-            Divider()
-
-            silentScreenshotOCRItem.keyboardShortcut(.silentScreenshotOCR)
-
-            if showOCRMenuItems {
-                screenshotOCRItem
-                pasteboardOCRItem
-                showOCRWindowItem
-            }
 
             Divider()
 
@@ -77,8 +59,6 @@ struct MenuItemView: View {
 
     @Environment(\.openURL) private var openURL
 
-    @Default(.showOCRMenuItems) private var showOCRMenuItems
-
     private var versionString: String {
         let defaultLabel = "Easydict  \(currentVersion)"
         if let latestVersion,
@@ -89,44 +69,8 @@ struct MenuItemView: View {
         }
     }
 
-    @ViewBuilder private var screenshotItem: some View {
-        menuItem(for: .snipTranslate)
-    }
-
     @ViewBuilder private var selectWordItem: some View {
         menuItem(for: .selectTranslate)
-    }
-
-    @ViewBuilder private var pasteboardTranslateItem: some View {
-        menuItem(for: .pasteboardTranslate)
-    }
-
-    @ViewBuilder private var polishAndReplaceItem: some View {
-        menuItem(for: .polishAndReplace)
-    }
-
-    @ViewBuilder private var translateAndReplaceItem: some View {
-        menuItem(for: .translateAndReplace)
-    }
-
-    @ViewBuilder private var miniWindowItem: some View {
-        menuItem(for: .showMiniWindow)
-    }
-
-    @ViewBuilder private var silentScreenshotOCRItem: some View {
-        menuItem(for: .silentScreenshotOCR)
-    }
-
-    @ViewBuilder private var screenshotOCRItem: some View {
-        menuItem(for: .screenshotOCR)
-    }
-
-    @ViewBuilder private var pasteboardOCRItem: some View {
-        menuItem(for: .pasteboardOCR)
-    }
-
-    @ViewBuilder private var showOCRWindowItem: some View {
-        menuItem(for: .showOCRWindow)
     }
 
     // MARK: - Other Items

@@ -71,7 +71,6 @@ struct GeneralTab: View {
 
             Section {
                 Toggle("auto_query_selected_text", isOn: $autoQuerySelectedText)
-                Toggle("auto_query_ocr_text", isOn: $autoQueryOCRText)
                 Toggle("auto_query_pasted_text", isOn: $autoQueryPastedText)
                 Toggle("setting.general.voice.auto_play_word_audio", isOn: $autoPlayAudio)
                 Picker(
@@ -89,7 +88,6 @@ struct GeneralTab: View {
 
             Section {
                 Toggle("auto_copy_selected_text", isOn: $autoCopySelectedText)
-                Toggle("auto_copy_ocr_text", isOn: $autoCopyOCRText)
                 Toggle("auto_copy_first_translated_text", isOn: $autoCopyFirstTranslatedText)
             } header: {
                 Text("setting.general.auto_copy.header")
@@ -191,6 +189,8 @@ struct GeneralTab: View {
                     }
                 }
 
+                Toggle("setting.general.app_setting.show_dock_icon", isOn: $showDockIcon)
+
             } header: {
                 Text("setting.general.app_setting.header")
             }
@@ -265,14 +265,12 @@ struct GeneralTab: View {
     @Default(.selectQueryTextWhenWindowActivate) private var selectQueryTextWhenWindowActivate
 
     // Auto query
-    @Default(.autoQueryOCRText) private var autoQueryOCRText
     @Default(.autoQuerySelectedText) private var autoQuerySelectedText
     @Default(.autoQueryPastedText) private var autoQueryPastedText
     @Default(.autoPlayAudio) private var autoPlayAudio
     @Default(.pronunciation) private var pronunciation
 
     // Auto copy
-    @Default(.autoCopyOCRText) private var autoCopyOCRText
     @Default(.autoCopySelectedText) private var autoCopySelectedText
     @Default(.autoCopyFirstTranslatedText) private var autoCopyFirstTranslatedText
 
@@ -284,6 +282,7 @@ struct GeneralTab: View {
 
     @Default(.appearanceType) private var appearanceType
     @Default(.hideMenuBarIcon) private var hideMenuBarIcon
+    @Default(.showDockIcon) private var showDockIcon
     @Default(.selectedMenuBarIcon) private var selectedMenuBarIcon
     @Default(.fontSizeOptionIndex) private var fontSizeOptionIndex
 

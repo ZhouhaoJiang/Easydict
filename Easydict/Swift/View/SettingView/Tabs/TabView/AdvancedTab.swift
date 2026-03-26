@@ -250,104 +250,8 @@ struct AdvancedTab: View {
                 }
             }
 
-            // OCR settings section
-            Section {
-                Toggle(isOn: $enableYoudaoOCR) {
-                    AdvancedTabItemView(
-                        color: .blue,
-                        icon: .circleRectangleFilledPatternDiagonalline,
-                        labelText: "setting.advance.enable_youdao_ocr",
-                        subtitleText: "setting.advance.enable_youdao_ocr_desc"
-                    )
-                }
-                Toggle(isOn: $enableOCRTextNormalization) {
-                    AdvancedTabItemView(
-                        color: .green,
-                        icon: .docViewfinder,
-                        labelText: "setting.advance.enable_ocr_text_normalization",
-                        subtitleText: "setting.advance.enable_ocr_text_normalization_desc"
-                    )
-                }
-
-                Toggle(isOn: $showOCRMenuItems) {
-                    AdvancedTabItemView(
-                        color: .orange,
-                        icon: .textAndCommandMacwindow,
-                        labelText: "setting.advance.show_ocr_menu_items",
-                        subtitleText: "setting.advance.show_ocr_menu_items_desc"
-                    )
-                }
-
-                Toggle(isOn: $isScreenshotTipLayerHidden) {
-                    AdvancedTabItemView(
-                        color: .purple,
-                        icon: .lightbulbFill,
-                        labelText: "setting.advance.hide_screenshot_tip_layer",
-                        subtitleText: "setting.advance.hide_screenshot_tip_layer_desc"
-                    )
-                }
-            } header: {
-                Text("setting.advance.header.ocr_settings")
-            }
-
             // Windows management
             Section {
-                Picker(
-                    selection: $mouseSelectTranslateWindowType,
-                    label: AdvancedTabItemView(
-                        color: .blue,
-                        icon: .cursorarrowRays,
-                        labelText: "setting.advance.window.mouse_select_translate_window_type"
-                    )
-                ) {
-                    ForEach(EZWindowType.availableOptions, id: \.rawValue) { option in
-                        Text(option.localizedStringResource)
-                            .tag(option)
-                    }
-                }
-
-                Picker(
-                    selection: $shortcutSelectTranslateWindowType,
-                    label: AdvancedTabItemView(
-                        color: .green,
-                        icon: .keyboardFill,
-                        labelText: "setting.advance.window.shortcut_select_translate_window_type"
-                    )
-                ) {
-                    ForEach(EZWindowType.availableOptions, id: \.rawValue) { option in
-                        Text(option.localizedStringResource)
-                            .tag(option)
-                    }
-                }
-
-                Picker(
-                    selection: $fixedWindowPosition,
-                    label: AdvancedTabItemView(
-                        color: .orange,
-                        icon: .textAndCommandMacwindow,
-                        labelText: "setting.advance.window.fixed_window_position"
-                    )
-                ) {
-                    ForEach(EZShowWindowPosition.allCases, id: \.rawValue) { option in
-                        Text(option.localizedStringResource)
-                            .tag(option)
-                    }
-                }
-
-                Picker(
-                    selection: $miniWindowPosition,
-                    label: AdvancedTabItemView(
-                        color: .purple,
-                        icon: .macwindow,
-                        labelText: "setting.advance.window.mini_window_position"
-                    )
-                ) {
-                    ForEach(EZShowWindowPosition.allCases, id: \.rawValue) { option in
-                        Text(option.localizedStringResource)
-                            .tag(option)
-                    }
-                }
-
                 Toggle(isOn: $pinWindowWhenDisplayed) {
                     AdvancedTabItemView(
                         color: .red,
@@ -388,35 +292,6 @@ struct AdvancedTab: View {
                 Text("setting.advance.window_management.header")
             }
 
-            // HTTP server
-            Section {
-                Toggle(isOn: $enableHTTPServer) {
-                    AdvancedTabItemView(
-                        color: getHttpIconColor(),
-                        icon: .network,
-                        labelText: "setting.advance.enable_http_server"
-                    )
-                }
-
-                LabeledContent {
-                    TextField("", text: $httpPort, prompt: Text(verbatim: "8080"))
-                        .frame(width: 100)
-                        .fixedSize(horizontal: true, vertical: false)
-                        // Add onChange modifier to filter input
-                        .onChange(of: httpPort) { newValue in
-                            httpPort = newValue.filter { $0.isNumber }
-                        }
-                } label: {
-                    AdvancedTabItemView(
-                        color: getHttpIconColor(),
-                        icon: .externaldriveConnectedToLineBelow,
-                        labelText: "setting.advance.http_port",
-                        subtitleText: "setting.advance.http_port_desc"
-                    )
-                }
-            } header: {
-                Text("setting.advance.header.http_server")
-            }
         }
         .formStyle(.grouped)
     }
@@ -427,13 +302,9 @@ struct AdvancedTab: View {
 
     @Default(.defaultTTSServiceType) private var defaultTTSServiceType
     @Default(.disableTipsView) private var disableTipsView
-    @Default(.enableYoudaoOCR) private var enableYoudaoOCR
     @Default(.enableCompatibilityReplace) private var enableCompatibilityReplace
     @Default(.enableAppleOfflineTranslation) private var enableLocalAppleTranslation
     @Default(.minClassicalChineseTextDetectLength) private var minClassicalChineseTextDetectLength
-    @Default(.enableOCRTextNormalization) private var enableOCRTextNormalization
-    @Default(.showOCRMenuItems) private var showOCRMenuItems
-    @Default(.isScreenshotTipLayerHidden) private var isScreenshotTipLayerHidden
     @Default(.autoSelectAllTextFieldText) private var autoSelectAllTextFieldText
     @Default(.preferAppleScriptAPI) private var preferAppleScriptAPI
 
@@ -451,22 +322,10 @@ struct AdvancedTab: View {
     @Default(.clickQuery) private var clickQuery
 
     // Windows management
-    @Default(.fixedWindowPosition) private var fixedWindowPosition
-    @Default(.miniWindowPosition) private var miniWindowPosition
-    @Default(.mouseSelectTranslateWindowType) private var mouseSelectTranslateWindowType
-    @Default(.shortcutSelectTranslateWindowType) private var shortcutSelectTranslateWindowType
     @Default(.pinWindowWhenDisplayed) private var pinWindowWhenDisplayed
     @Default(.hideMainWindow) private var hideMainWindow
 
-    @Default(.enableHTTPServer) private var enableHTTPServer
-    @Default(.httpPort) private var httpPort
-
     @Default(.maxWindowHeightPercentage) private var maxWindowHeightPercentageValue
-
-    /// Returns Color.green if `enableHTTPServer` is true, returns Color.red otherwise.
-    private func getHttpIconColor() -> Color {
-        enableHTTPServer ? .green : .red
-    }
 }
 
 #Preview {

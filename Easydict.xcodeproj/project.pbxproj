@@ -368,6 +368,7 @@
 		03CA1CF12EDE089E001908D0 /* Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CA1CED2EDE089E001908D0 /* Appearance.swift */; };
 		03CA1CF22EDE089E001908D0 /* DarkModeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CA1CEF2EDE089E001908D0 /* DarkModeProtocol.swift */; };
 		03CA1CF32EDE089E001908D0 /* DarkModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CA1CEE2EDE089E001908D0 /* DarkModeManager.swift */; };
+		0301000B2F9900AA001234AB /* DockIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0301000A2F9900AA001234AB /* DockIconManager.swift */; };
 		03CA1CF62EDE08C0001908D0 /* NSObject+DarkMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CA1CF42EDE08C0001908D0 /* NSObject+DarkMode.swift */; };
 		03CD01592D24E17C0079D0CB /* YoudaoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CD01572D24E17C0079D0CB /* YoudaoService.swift */; };
 		03CE80272ED89AD600FB4EAB /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CE80252ED89AD600FB4EAB /* GoogleService.swift */; };
@@ -1023,6 +1024,7 @@
 		03C408F82EF5CB830025A1F0 /* ServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceTests.swift; sourceTree = "<group>"; };
 		03CA1CED2EDE089E001908D0 /* Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Appearance.swift; sourceTree = "<group>"; };
 		03CA1CEE2EDE089E001908D0 /* DarkModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkModeManager.swift; sourceTree = "<group>"; };
+		0301000A2F9900AA001234AB /* DockIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockIconManager.swift; sourceTree = "<group>"; };
 		03CA1CEF2EDE089E001908D0 /* DarkModeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkModeProtocol.swift; sourceTree = "<group>"; };
 		03CA1CF42EDE08C0001908D0 /* NSObject+DarkMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSObject+DarkMode.swift"; sourceTree = "<group>"; };
 		03CC6C092B21B0DC0049ED29 /* Info-debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-debug.plist"; sourceTree = "<group>"; };
@@ -2647,6 +2649,14 @@
 			path = Appearance;
 			sourceTree = "<group>";
 		};
+		0301000C2F9900AA001234AB /* DockIcon */ = {
+			isa = PBXGroup;
+			children = (
+				0301000A2F9900AA001234AB /* DockIconManager.swift */,
+			);
+			path = DockIcon;
+			sourceTree = "<group>";
+		};
 		03CD01582D24E17C0079D0CB /* Youdao */ = {
 			isa = PBXGroup;
 			children = (
@@ -3228,6 +3238,7 @@
 				03779F122BB256B5008D3C42 /* DefaultAPIKeys */,
 				6A8C988B2BAC88A600DB835A /* Localization */,
 				967712EC2B5B941600105E0F /* Shortcut */,
+				0301000C2F9900AA001234AB /* DockIcon */,
 			);
 			path = Feature;
 			sourceTree = "<group>";
@@ -4088,6 +4099,7 @@
 				03CA1CF12EDE089E001908D0 /* Appearance.swift in Sources */,
 				03CA1CF22EDE089E001908D0 /* DarkModeProtocol.swift in Sources */,
 				03CA1CF32EDE089E001908D0 /* DarkModeManager.swift in Sources */,
+				0301000B2F9900AA001234AB /* DockIconManager.swift in Sources */,
 				03E75A0C2ED7610400E1741E /* Array+ObjCCompat.swift in Sources */,
 				03542A5B2938DA2B00C34C33 /* EZDetectLanguageButton.m in Sources */,
 				035F9CCF2C529A04005D1C9A /* ServiceAPIType.swift in Sources */,
